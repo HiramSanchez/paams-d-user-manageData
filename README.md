@@ -1,7 +1,9 @@
 # **User Data Manager (paams-d-user-manageData)**
 
 [![Java](https://img.shields.io/badge/Java-21-skyblue)](https://www.oracle.com/java/)
+ &emsp;
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.2.3-lightgreen)](https://spring.io/projects/spring-boot)
+ &emsp;
 [![Maven](https://img.shields.io/badge/Maven-3.9.9-gold)](https://maven.apache.org/)
 
 
@@ -37,7 +39,7 @@ Before running this project, ensure the following dependencies are installed:
 
 - **Java 21**: [Download Java](https://www.oracle.com/java/technologies/downloads/#java21l)
 - **Maven 3.9.9**: [Download Maven](https://maven.apache.org/download.cgi)
-- **Database**: MongoDB  
+- **MongoDB**: [Download MongoDB](https://www.mongodb.com/try/download/community)
 
 
 ## **Installation**
@@ -60,25 +62,6 @@ Before running this project, ensure the following dependencies are installed:
     mvn clean install
     mvn spring-boot:run
     ```  
-
-## **Contributing**
-
-We welcome contributions! Please follow these steps:
-
-1. Fork the repository.
-2. Create a new branch:
-    ```bash
-    git checkout -b feature/new-feature
-    ```
-3. Commit your changes:
-    ```bash
-    git commit -m 'Add new feature'
-    ```
-4. Push to the branch:
-    ```bash
-    git push origin feature/new-feature
-    ```
-5. Open a pull request.
 
 ## **Contact**
 For any questions or suggestions, feel free to contact me at:  
