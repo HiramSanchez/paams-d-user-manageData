@@ -6,13 +6,29 @@
 
 
 ## **Description**
-This **paams-d-user-manageData** microservice provides a RESTful API for managing user registrations with CRUD functionality (Create, Read, Update, Delete). It supports connections to multiple databases and is designed to be scalable and easily integrated into a microservices architecture.  
+The **paams-d-user-manageData** microservice is responsible for managing user registration data. It provides a RESTful API for creating, reading, updating, and deleting user records in the database. Designed for scalability and easy integration into a microservices architecture, this service manages multiple databases.
 
 
 ## **Features**
-- **CRUD API**: Enables creation, retrieval, updating, and deletion of user records.
-- **MVC Architecture**: Follows a layered architecture with separation of concerns (controller, service, repository, model).
-- **Multi-DB Support**: Connects to multiple databases based on request type.  
+- **Create User Data**: Register new users and create records in the database.
+- **Update User Data**: Modify existing user registration data.
+- **Retrieve User Data**: Fetch user records from the database.
+- **Delete User Data**: Permanently delete user registration records. 
+
+
+## **API Endpoints**
+
+- **POST /api/user/new/data**  
+  `user-new-data`: Responsible for creating new user records in the database.
+  
+- **PUT /api/user/data/update**  
+  `user-data-update`: Updates existing user records in the database.
+  
+- **GET /api/user/data/read**  
+  `user-data-read`: Retrieves user registration data from the database.
+  
+- **DELETE /api/user/drop/data**  
+  `user-drop-data`: Permanently deletes user records from the database.
 
 
 ## **Requirements**
@@ -24,20 +40,11 @@ Before running this project, ensure the following dependencies are installed:
 - **Database**: MongoDB  
 
 
-## **Usage**
-The microservice provides the following API endpoints:
-
-- **POST - /api/user/new/data** - Create a new user.
-- **GET - /api/user/data/read** - Retrieve user's data.
-- **PUT - /api/user/data/update** - Update an existing user.
-- **DELETE - /api/user/drop/data** - Delete a user.
-
-
 ## **Installation**
 
 1. Clone this repository:
     ```bash
-    git clone https://github.com/your-username/paams-d-user-manageData.git
+    git clone https://github.com/HiramSanchez/paams-d-user-manageData.git
     cd paams-d-user-manageData
     ```
 
@@ -53,6 +60,25 @@ The microservice provides the following API endpoints:
     mvn clean install
     mvn spring-boot:run
     ```  
+
+## **Contributing**
+
+We welcome contributions! Please follow these steps:
+
+1. Fork the repository.
+2. Create a new branch:
+    ```bash
+    git checkout -b feature/new-feature
+    ```
+3. Commit your changes:
+    ```bash
+    git commit -m 'Add new feature'
+    ```
+4. Push to the branch:
+    ```bash
+    git push origin feature/new-feature
+    ```
+5. Open a pull request.
 
 ## **Contact**
 For any questions or suggestions, feel free to contact me at:  
