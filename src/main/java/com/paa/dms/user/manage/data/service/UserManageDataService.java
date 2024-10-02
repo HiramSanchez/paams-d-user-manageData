@@ -1,6 +1,8 @@
 package com.paa.dms.user.manage.data.service;
 
 import com.paa.dms.user.manage.data.constants.APIConstants;
+import com.paa.dms.user.manage.data.exception.custom.ForbiddenException;
+import com.paa.dms.user.manage.data.exception.custom.NoDataFoundException;
 import com.paa.dms.user.manage.data.model.*;
 import com.paa.dms.user.manage.data.repository.UsersContactInfoRepository;
 import com.paa.dms.user.manage.data.repository.UsersNameRepository;
@@ -50,6 +52,7 @@ public class UserManageDataService {
         usersContactInfoRepository.save(userInfo);
         usersNameRepository.save(userName);
         ResponseEntity response = ResponseEntity.ok("User Created");
+        log.debug("User Created");
         log.debug(APIConstants.RESPONSE_STRING_HTTP_EMPTY + response.getStatusCode().toString());
         return response;
     }
@@ -62,26 +65,22 @@ public class UserManageDataService {
 
         String uid = httpHeaders.getFirst("uid").toString();
         log.debug("REQUEST >>> " + uid + " data requested");
-        var userInfo = findUsersInfoByUid(uid);;
-        var userName = findUserNameByUid(uid);
+        var userInfo = findUsersInfoByUid(uid).orElseThrow(() -> new NoDataFoundException());
+        var userName = findUserNameByUid(uid).orElseThrow(() -> new NoDataFoundException());
 
-        if (userInfo.isPresent() && userName.isPresent()) {
             ResponseUserDataEntity response = new ResponseUserDataEntity();
-            response.setEmail(userInfo.get().getEmail());
-            response.setPhone(userInfo.get().getPhone());
-            response.setAddress1(userInfo.get().getAddress1());
-            response.setAddress2(userInfo.get().getAddress2());
-            response.setTown(userInfo.get().getCity());
-            response.setState(userInfo.get().getState());
-            response.setZipCode(userInfo.get().getZipCode());
-            response.setName(userName.get().getFirstName());
-            response.setMiddleName(userName.get().getMiddleName());
-            response.setLastName(userName.get().getLastName());
-            log.debug("RESPONSE >>> " + response.toString());
+            response.setEmail(userInfo.getEmail());
+            response.setPhone(userInfo.getPhone());
+            response.setAddress1(userInfo.getAddress1());
+            response.setAddress2(userInfo.getAddress2());
+            response.setTown(userInfo.getCity());
+            response.setState(userInfo.getState());
+            response.setZipCode(userInfo.getZipCode());
+            response.setName(userName.getFirstName());
+            response.setMiddleName(userName.getMiddleName());
+            response.setLastName(userName.getLastName());
+            log.debug("RESPONSE >>> " + response);
             return ResponseEntity.ok(response);
-        }
-        log.debug(APIConstants.RESPONSE_STRING_HTTP404);
-        return ResponseEntity.notFound().build();
     }
 
     public Optional<MongoUsersContactInfoEntity> findUsersInfoByUid(String uid) {
@@ -108,21 +107,16 @@ public class UserManageDataService {
                 || !userRequest.getState().isEmpty()
                 || !userRequest.getZipCode().isEmpty())
             {
-                Optional<MongoUsersContactInfoEntity> existingUserInfo = usersContactInfoRepository.findUserInfoByUid(uid);
-                if (existingUserInfo.isPresent()) {
-                    MongoUsersContactInfoEntity foundUserInfo = existingUserInfo.get();
-                    updateFieldIfNotEmpty(userRequest.getEmail(), foundUserInfo::setEmail, foundUserInfo::getEmail);
-                    updateFieldIfNotEmpty(userRequest.getPhone(), foundUserInfo::setPhone, foundUserInfo::getPhone);
-                    updateFieldIfNotEmpty(userRequest.getAddress1(), foundUserInfo::setAddress1, foundUserInfo::getAddress1);
-                    updateFieldIfNotEmpty(userRequest.getAddress2(), foundUserInfo::setAddress2, foundUserInfo::getAddress2);
-                    updateFieldIfNotEmpty(userRequest.getCity(), foundUserInfo::setCity, foundUserInfo::getCity);
-                    updateFieldIfNotEmpty(userRequest.getState(), foundUserInfo::setState, foundUserInfo::getState);
-                    updateFieldIfNotEmpty(userRequest.getZipCode(), foundUserInfo::setZipCode, foundUserInfo::getZipCode);
-                    usersContactInfoRepository.save(foundUserInfo);
-                    } else {
-                        log.debug(APIConstants.RESPONSE_STRING_HTTP404);
-                        return ResponseEntity.notFound().build();
-                    }
+                MongoUsersContactInfoEntity existingUserInfo = usersContactInfoRepository.findUserInfoByUid(uid).orElseThrow(() -> new NoDataFoundException());
+                MongoUsersContactInfoEntity foundUserInfo = existingUserInfo;
+                updateFieldIfNotEmpty(userRequest.getEmail(), foundUserInfo::setEmail, foundUserInfo::getEmail);
+                updateFieldIfNotEmpty(userRequest.getPhone(), foundUserInfo::setPhone, foundUserInfo::getPhone);
+                updateFieldIfNotEmpty(userRequest.getAddress1(), foundUserInfo::setAddress1, foundUserInfo::getAddress1);
+                updateFieldIfNotEmpty(userRequest.getAddress2(), foundUserInfo::setAddress2, foundUserInfo::getAddress2);
+                updateFieldIfNotEmpty(userRequest.getCity(), foundUserInfo::setCity, foundUserInfo::getCity);
+                updateFieldIfNotEmpty(userRequest.getState(), foundUserInfo::setState, foundUserInfo::getState);
+                updateFieldIfNotEmpty(userRequest.getZipCode(), foundUserInfo::setZipCode, foundUserInfo::getZipCode);
+                usersContactInfoRepository.save(foundUserInfo);
             } else {
                 log.debug("No contact data updated");
             }
@@ -131,22 +125,20 @@ public class UserManageDataService {
                 || !userRequest.getMiddleName().isEmpty()
                 || !userRequest.getLastName().isEmpty())
             {
-                Optional<MongoUsersNameEntity> existingUserName = usersNameRepository.findUserNameByUid(uid);
-                if (existingUserName.isPresent()) {
-                    MongoUsersNameEntity foundUserName = existingUserName.get();
+                MongoUsersNameEntity existingUserName = usersNameRepository.findUserNameByUid(uid).orElseThrow(() -> new NoDataFoundException());
+
+                    MongoUsersNameEntity foundUserName = existingUserName;
                     updateFieldIfNotEmpty(userRequest.getName(), foundUserName::setFirstName, foundUserName::getFirstName);
                     updateFieldIfNotEmpty(userRequest.getMiddleName(), foundUserName::setMiddleName, foundUserName::getMiddleName);
                     updateFieldIfNotEmpty(userRequest.getLastName(), foundUserName::setLastName, foundUserName::getLastName);
                     usersNameRepository.save(foundUserName);
-                    } else {
-                        log.debug(APIConstants.RESPONSE_STRING_HTTP404);
-                        return ResponseEntity.notFound().build();
-                    }
+
             } else {
                 log.debug("No name data updated");
             }
 
         ResponseEntity response = ResponseEntity.ok("User Updated");
+        log.debug("User Updated");
         log.debug(APIConstants.RESPONSE_STRING_HTTP_EMPTY + response.getStatusCode().toString());
         return response;
     }
@@ -164,18 +156,19 @@ public class UserManageDataService {
 
         String uid = httpHeaders.getFirst("uid");
         log.debug("REQUEST >>> " + uid + " delete data requested with this email: " + userRequest.getEmail().toString());
-        MongoUsersContactInfoEntity storedUserData = findUsersInfoByUid(uid).get();
-        MongoUsersNameEntity storedUserName = findUserNameByUid(uid).get();
+
+        MongoUsersContactInfoEntity storedUserData = findUsersInfoByUid(uid).orElseThrow(() -> new NoDataFoundException());
+        MongoUsersNameEntity storedUserName = findUserNameByUid(uid).orElseThrow(() -> new NoDataFoundException());
+
         if (userRequest.getEmail().equals(storedUserData.getEmail())) {
                 usersContactInfoRepository.deleteById(storedUserData.get_id().toString());
                 usersNameRepository.deleteById(storedUserName.get_id().toString());
-            ResponseEntity response = ResponseEntity.ok("User deleted successfully");
-            log.debug(APIConstants.RESPONSE_STRING_HTTP_EMPTY + response.getStatusCode().toString());
-            return response;
-            }else{
-                ResponseEntity response = new ResponseEntity<>(HttpStatus.FORBIDDEN);
-                log.debug(APIConstants.RESPONSE_STRING_HTTP403);
+                ResponseEntity response = ResponseEntity.ok("User deleted successfully");
+                log.debug("User deleted successfully");
+                log.debug(APIConstants.RESPONSE_STRING_HTTP_EMPTY + response.getStatusCode().toString());
                 return response;
+            }else{
+                throw new ForbiddenException();
             }
     }
 }

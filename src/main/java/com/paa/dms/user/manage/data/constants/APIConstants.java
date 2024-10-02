@@ -10,15 +10,17 @@ public class APIConstants {
     public static final String DELETE_USER_DATA_ENDPOINT = "${constants.api.uri.userDropData.path}";
 
     //Service call log messages
+    public static final String SERVICE_START = "MS started : paams-d-userManageData";
     public static final String LOG_NEW_USER_ENDPOINT = "[Service endpoint Call - userNewData]";
     public static final String LOG_READ_USER_ENDPOINT = "[Service endpoint Call - userDataRead]";
     public static final String LOG_UPDATE_USER_ENDPOINT = "[Service endpoint Call - userDataUpdate]";
     public static final String LOG_DELETE_USER_ENDPOINT = "[Service endpoint Call - userDropData]";
 
-    //Service process log messages
+    //Error resolver log messages
     public static final String RESPONSE_STRING_HTTP_EMPTY = "RESPONSE >>> HTTP STATUS ";
-    public static final String RESPONSE_STRING_HTTP403 = "RESPONSE >>> HTTP STATUS 403 FORBIDDEN";
-    public static final String RESPONSE_STRING_HTTP404 = "RESPONSE >>> HTTP STATUS 404 NOT FOUND";
+    public static final String EXCEPTION_MSG_UNEXPECTED = "An unexpected error occurred";
+    public static final String EXCEPTION_MSG_NO_DATA_FOUND = "Resource not found in DB";
+    public static final String EXCEPTION_MSG_FORBIDDEN = "Invalid Request due to data validation";
 
 
 }
