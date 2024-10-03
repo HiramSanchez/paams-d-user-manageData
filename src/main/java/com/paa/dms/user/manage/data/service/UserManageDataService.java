@@ -56,8 +56,7 @@ public class UserManageDataService {
         usersContactInfoRepository.save(userInfo);
         usersNameRepository.save(userName);
         ResponseEntity response = ResponseEntity.ok("User Created");
-        log.debug("User Created");
-        log.debug(APIConstants.RESPONSE_STRING_HTTP_EMPTY + response.getStatusCode().toString());
+        log.debug("RESPONSE >>> User Created");
         return response;
     }
 
@@ -161,8 +160,7 @@ public class UserManageDataService {
             }
 
         ResponseEntity response = ResponseEntity.ok("User Updated");
-        log.debug("User Updated");
-        log.debug(APIConstants.RESPONSE_STRING_HTTP_EMPTY + response.getStatusCode().toString());
+        log.debug("RESPONSE >>> " + response);
         return response;
     }
 
@@ -199,8 +197,7 @@ public class UserManageDataService {
                 usersContactInfoRepository.deleteById(storedUserData.get_id().toString());
                 usersNameRepository.deleteById(storedUserName.get_id().toString());
                 ResponseEntity response = ResponseEntity.ok("User deleted successfully");
-                log.debug("User deleted successfully");
-                log.debug(APIConstants.RESPONSE_STRING_HTTP_EMPTY + response.getStatusCode().toString());
+                log.debug("RESPONSE >>> User deleted successfully");
                 return response;
             }else{
                 throw new ForbiddenException();

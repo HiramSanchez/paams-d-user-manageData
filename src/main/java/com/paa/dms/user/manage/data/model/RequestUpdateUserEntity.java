@@ -14,7 +14,6 @@ public class RequestUpdateUserEntity {
     /** The user's phone number. */
     private String phone;
     /** The user's email address. */
-    @Email(message = "should be valid")
     private String email;
     /** The primary address line of the user. */
     private String address1;

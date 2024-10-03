@@ -8,8 +8,8 @@ import lombok.Data;
 @Data
 public class RequestDeleteUserEntity {
 
-    @Email(message = "should be valid")
-    @NotBlank(message = "is mandatory")
+    @Email(message = " should be valid")
+    @NotBlank(message = " is mandatory")
     /** The user's phone number. */
     private String email;
 }
