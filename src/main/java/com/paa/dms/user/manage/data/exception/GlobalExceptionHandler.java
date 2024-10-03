@@ -33,7 +33,7 @@ public class GlobalExceptionHandler {
         String message = ex.getBindingResult()
                 .getFieldErrors()
                 .stream()
-                .map(error -> error.getField() + ": " + error.getDefaultMessage())
+                .map(error -> error.getField() + " field " + error.getDefaultMessage())
                 .reduce((error1, error2) -> error1 + ", " + error2)
                 .orElse(ex.getMessage());
 
