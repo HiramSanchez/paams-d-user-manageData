@@ -29,7 +29,7 @@ public class UserManageDataService {
     ///////////////////////////
     //  Create User Service  //
     ///////////////////////////
-    public ResponseEntity<String> saveUser(HttpHeaders httpHeaders, RequestNewUserEntity userRequest) {
+    public ResponseEntity<String> saveUser(RequestNewUserEntity userRequest, HttpHeaders httpHeaders) {
 
         log.debug("REQUEST >>> " + userRequest.toString());
         String uid = httpHeaders.getFirst("uid").toString();
@@ -95,7 +95,7 @@ public class UserManageDataService {
     ///////////////////////////
     //  Update Data Service  //
     ///////////////////////////
-    public ResponseEntity<String> updateUser(RequestNewUserEntity userRequest,HttpHeaders httpHeaders) {
+    public ResponseEntity<String> updateUser(RequestUpdateUserEntity userRequest,HttpHeaders httpHeaders) {
         log.debug("REQUEST >>> " + userRequest.toString());
         String uid = httpHeaders.getFirst("uid").toString();
         //Checks which DB should be called according to request,then if needed updates data.
