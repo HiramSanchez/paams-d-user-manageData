@@ -4,6 +4,7 @@ import com.paa.dms.user.manage.data.constants.APIConstants;
 import com.paa.dms.user.manage.data.exception.custom.ForbiddenException;
 import com.paa.dms.user.manage.data.exception.custom.NoDataFoundException;
 import lombok.Data;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -19,6 +20,8 @@ import org.springframework.web.context.request.WebRequest;
  * consistent error responses to the client.
  */
 public class GlobalExceptionHandler {
+    @Autowired
+    private APIConstants apiConstants;
 
 /*
     // Generic Exceptions
@@ -26,7 +29,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleGlobalException(Exception ex, WebRequest request) {
         ErrorResponse errorResponse = new ErrorResponse(
                 HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                APIConstants.EXCEPTION_MSG_UNEXPECTED,
+                apiConstants.getEXCEPTION_MSG_UNEXPECTED(),
                 request.getDescription(false)
         );
         return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -68,7 +71,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<?> handleResourceNotFoundException(WebRequest request) {
         ErrorResponse errorDetails = new ErrorResponse(
                 HttpStatus.NOT_FOUND.value(),
-                APIConstants.EXCEPTION_MSG_NO_DATA_FOUND,
+                apiConstants.getEXCEPTION_MSG_NO_DATA_FOUND(),
                 request.getDescription(false)
         );
         return new ResponseEntity<>(errorDetails, HttpStatus.NOT_FOUND);
@@ -84,7 +87,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<?> handleForbiddenException(WebRequest request) {
         ErrorResponse errorDetails = new ErrorResponse(
                 HttpStatus.FORBIDDEN.value(),
-                APIConstants.EXCEPTION_MSG_FORBIDDEN,
+                apiConstants.getEXCEPTION_MSG_FORBIDDEN(),
                 request.getDescription(false)
         );
         return new ResponseEntity<>(errorDetails, HttpStatus.FORBIDDEN);
