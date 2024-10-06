@@ -1,6 +1,5 @@
 package com.paa.dms.user.manage.data.service;
 
-import com.paa.dms.user.manage.data.constants.APIConstants;
 import com.paa.dms.user.manage.data.exception.custom.ForbiddenException;
 import com.paa.dms.user.manage.data.exception.custom.NoDataFoundException;
 import com.paa.dms.user.manage.data.model.*;
@@ -9,7 +8,6 @@ import com.paa.dms.user.manage.data.repository.UsersNameRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import java.util.function.Consumer;
@@ -197,7 +195,7 @@ public class UserManageDataService {
                 usersContactInfoRepository.deleteById(storedUserData.get_id().toString());
                 usersNameRepository.deleteById(storedUserName.get_id().toString());
                 ResponseEntity response = ResponseEntity.ok("User deleted successfully");
-                log.debug("RESPONSE >>> User deleted successfully");
+                log.debug("RESPONSE >>> " + response);
                 return response;
             }else{
                 throw new ForbiddenException();
