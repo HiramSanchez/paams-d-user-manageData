@@ -34,4 +34,17 @@ public class APIConstants {
     private String EXCEPTION_MSG_NO_DATA_FOUND;
     @Value("${constants.api.uri.errors.msg.forbidden}")
     private String EXCEPTION_MSG_FORBIDDEN;
+
+    //Swagger Constants
+    @Value("${service.api.version}")
+    private String SERVICE_VERSION;
+    @Value("${service.api.details}")
+    private String SERVICE_DESCRIPTION;
+    @Value("${service.api.dev.name}")
+    private String DEV_NAME;
+    @Value("${service.api.dev.web}")
+    private String DEV_WEB;
+    @Value("${service.api.dev.email}")
+    private String DEV_EMAIL;
+
 }
