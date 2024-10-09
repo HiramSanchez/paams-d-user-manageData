@@ -20,18 +20,23 @@ The **paams-d-user-manageData** microservice is responsible for managing user re
 
 ## **API Endpoints**
 
-- **POST /api/user/new/data**  
+- **POST - /api/user/new/data**  
   `user-new-data`: Responsible for creating new user records in the database.
   
-- **PUT /api/user/data/update**  
+- **PUT - /api/user/data/update**  
   `user-data-update`: Updates existing user records in the database.
   
-- **GET /api/user/data/read**  
+- **GET - /api/user/data/read**  
   `user-data-read`: Retrieves user registration data from the database.
   
-- **DELETE /api/user/drop/data**  
+- **DELETE - /api/user/drop/data**  
   `user-drop-data`: Permanently deletes user records from the database.
 
+## **API Documentation**
+This project includes API documentation using swagger. Access the documentation by running it and navigating to:
+```bash
+http://localhost:8080/swagger-ui/index.html
+```
 
 ## **Requirements**
 Before running this project, ensure the following dependencies are installed:
