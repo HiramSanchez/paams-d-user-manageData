@@ -34,7 +34,7 @@ public class UserManageDataController {
             summary = "Create a new user",
             description = "Creates a new user based on the provided details.",
             parameters = {
-                    @Parameter(in = ParameterIn.HEADER,name = "uid", description = "Header containing user id, (9 digit number)", required = true)
+                    @Parameter(in = ParameterIn.HEADER,name = "uid", description = "Header containing user id, string of 9 digit number", required = true)
             },
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "User details for the new user", required = true),
             responses = {
@@ -59,7 +59,7 @@ public class UserManageDataController {
             summary = "Retrieve user data",
             description = "Fetches user data using the provided headers containing user identification.",
             parameters = {
-                    @Parameter(in = ParameterIn.HEADER,name = "uid", description = "Header containing user id, (9 digit number)", required = true)
+                    @Parameter(in = ParameterIn.HEADER,name = "uid", description = "Header containing user id, string of 9 digit number", required = true)
             },
             responses = {
                     @ApiResponse(responseCode = "200", description = "User data retrieve"),
@@ -84,7 +84,7 @@ public class UserManageDataController {
             summary = "Update user data",
             description = "Updates user data based on the provided information.",
             parameters = {
-                    @Parameter(in = ParameterIn.HEADER,name = "uid", description = "Header containing user id, (9 digit number)", required = true)
+                    @Parameter(in = ParameterIn.HEADER,name = "uid", description = "Header containing user id, string of 9 digit number", required = true)
             },
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Data to update the user", required = true),
             responses = {
@@ -111,7 +111,7 @@ public class UserManageDataController {
             summary = "Delete user",
             description = "Permanently deletes a user based on the uid provided at headers, email for validation.",
             parameters = {
-                    @Parameter(in = ParameterIn.HEADER,name = "uid", description = "Header containing user id, (9 digit number)", required = true)
+                    @Parameter(in = ParameterIn.HEADER,name = "uid", description = "Header containing user id, string of 9 digit number", required = true)
             },
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Email of the user to delete", required = true),
             responses = {

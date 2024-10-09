@@ -32,6 +32,11 @@ The **paams-d-user-manageData** microservice is responsible for managing user re
 - **DELETE /api/user/drop/data**  
   `user-drop-data`: Permanently deletes user records from the database.
 
+## **API Documentation**
+This project includes API documentation using Swagger. Access the documentation by running it and navigating to:
+```bash
+http://localhost:8080/swagger-ui/index.html
+```
 
 ## **Requirements**
 Before running this project, ensure the following dependencies are installed:
