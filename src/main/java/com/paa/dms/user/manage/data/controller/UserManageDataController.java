@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
 public class UserManageDataController {
 
     @Autowired
-    private UserManageDataService userManageDataService;
+    private UserManageDataService userManageDataServiceImpl;
     @Autowired
     private APIConstants apiConstants;
 
@@ -46,7 +46,7 @@ public class UserManageDataController {
     @PostMapping(path = APIConstants.CREATE_NEW_USER_ENDPOINT)
     public ResponseEntity<String> createUser(@Valid @RequestBody RequestNewUserEntity userRequest, @RequestHeader HttpHeaders httpHeaders) {
         log.debug(apiConstants.getLOG_NEW_USER_ENDPOINT());
-        return userManageDataService.saveUser(userRequest,httpHeaders);
+        return userManageDataServiceImpl.saveUser(userRequest,httpHeaders);
     }
 
     /**
@@ -70,7 +70,7 @@ public class UserManageDataController {
     @GetMapping(path = APIConstants.READ_USER_DATA_ENDPOINT)
     public ResponseEntity<ResponseUserDataEntity> getUser(@RequestHeader HttpHeaders httpHeaders) {
         log.debug(apiConstants.getLOG_READ_USER_ENDPOINT());
-        return userManageDataService.findUserData(httpHeaders);
+        return userManageDataServiceImpl.findUserData(httpHeaders);
     }
 
     /**
@@ -97,7 +97,7 @@ public class UserManageDataController {
     @PutMapping(path = APIConstants.UPDATE_USER_DATA_ENDPOINT)
     public ResponseEntity<String> updateUser(@Valid @RequestBody RequestUpdateUserEntity userRequest, @RequestHeader HttpHeaders httpHeaders) {
         log.debug(apiConstants.getLOG_UPDATE_USER_ENDPOINT());
-        return userManageDataService.updateUser(userRequest,httpHeaders);
+        return userManageDataServiceImpl.updateUser(userRequest,httpHeaders);
     }
 
     /**
@@ -125,7 +125,7 @@ public class UserManageDataController {
     @DeleteMapping(path = APIConstants.DELETE_USER_DATA_ENDPOINT)
     public ResponseEntity<String> deleteUser(@Valid @RequestBody RequestDeleteUserEntity userRequest, @RequestHeader HttpHeaders httpHeaders) {
         log.debug(apiConstants.getLOG_DELETE_USER_ENDPOINT());
-        return userManageDataService.deleteUser(userRequest,httpHeaders);
+        return userManageDataServiceImpl.deleteUser(userRequest,httpHeaders);
     }
 
 }
