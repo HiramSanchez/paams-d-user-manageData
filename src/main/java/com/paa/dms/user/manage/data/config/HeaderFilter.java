@@ -4,6 +4,7 @@ import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Date;
 
 @Component
 public class HeaderFilter implements Filter {
@@ -16,7 +17,14 @@ public class HeaderFilter implements Filter {
 
         String uid = httpRequest.getHeader("uid");
         if (uid == null || uid.isEmpty()) {
-            httpResponse.sendError(HttpServletResponse.SC_BAD_REQUEST);
+            httpResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            httpResponse.setContentType("application/json");
+            String timestamp = new Date().toString();
+            String details = ((HttpServletRequest) request).getServletPath().toString();
+            httpResponse.getWriter().write("{\"timestamp\": \"" +timestamp+ "\"," +
+                    "\"statusCode\":400," +
+                    "\"message\":\"Missing uid header\"," +
+                    "\"details\": \"uri="+ details +"\"}");
             return;
         }
 
