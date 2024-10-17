@@ -31,7 +31,8 @@ public class UserManageDataServiceImpl implements UserManageDataService {
      * @param userRequest the details of the new user
      * @param httpHeaders HTTP headers containing the user's unique identifier (UID)
      * @return ResponseEntity with a success message
-     */    public ResponseEntity<String> saveUser(RequestNewUserEntity userRequest, HttpHeaders httpHeaders) {
+     */
+    public ResponseEntity<String> saveUser(RequestNewUserEntity userRequest, HttpHeaders httpHeaders) {
 
         log.debug("REQUEST >>> " + userRequest.toString());
         String uid = httpHeaders.getFirst("uid").toString();
