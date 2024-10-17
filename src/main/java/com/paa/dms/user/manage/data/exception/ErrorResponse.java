@@ -1,9 +1,6 @@
 package com.paa.dms.user.manage.data.exception;
 
-import lombok.Data;
-
 import java.util.Date;
-@Data
 /**
  * Represents a standardized error response structure for API error messages.
  * This class encapsulates the details of an error that occurs during API
