@@ -40,7 +40,7 @@ class UserManageDataControllerTest {
 
         // Assert
         Mockito.verify(userManageDataServiceImpl, Mockito.times(1)).saveUser(userRequest, httpHeaders);
-        Assertions.assertEquals(200, response.getStatusCodeValue());
+        Assertions.assertEquals(200, response.getStatusCode().value());
         Assertions.assertEquals("User created", response.getBody());
     }
 
@@ -53,7 +53,7 @@ class UserManageDataControllerTest {
 
         // Assert
         Mockito.verify(userManageDataServiceImpl, Mockito.times(1)).saveUser(userRequest, httpHeaders);
-        Assertions.assertEquals(200, response.getStatusCodeValue());
+        Assertions.assertEquals(200, response.getStatusCode().value());
         Assertions.assertEquals("User created", response.getBody());
     }
 
