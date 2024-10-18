@@ -80,4 +80,19 @@ class GlobalExceptionHandlerTest {
         assertEquals("URI=/api/restricted", errorResponse.getDetails());
     }
 
+    @Test
+    void testHandleBadRequestException() {
+        // Arrange
+        when(apiConstants.getEXCEPTION_MSG_BAD_REQUEST()).thenReturn("Bad Request");
+        when(webRequest.getDescription(false)).thenReturn("URI=/api/restricted");
+        ResponseEntity<?> response = globalExceptionHandler.handleBadRequestException(webRequest);
+        // Assert
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        ErrorResponse errorResponse = (ErrorResponse) response.getBody();
+        assertNotNull(errorResponse);
+        assertEquals(HttpStatus.BAD_REQUEST.value(), errorResponse.getStatusCode());
+        assertEquals("Bad Request", errorResponse.getMessage());
+        assertEquals("URI=/api/restricted", errorResponse.getDetails());
+    }
+
 }
