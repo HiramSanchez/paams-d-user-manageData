@@ -42,8 +42,7 @@ class GlobalExceptionHandlerTest {
         when(bindingResult.getFieldErrors()).thenReturn(List.of(fieldError));
         when(webRequest.getDescription(false)).thenReturn("URI=/api/user");
         ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleValidationException(validationException, webRequest);
-
-
+        // Assert
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertNotNull(response.getBody());
         assertEquals(HttpStatus.BAD_REQUEST.value(), response.getBody().getStatusCode());
@@ -56,9 +55,8 @@ class GlobalExceptionHandlerTest {
         // Arrange
         when(apiConstants.getEXCEPTION_MSG_NO_DATA_FOUND()).thenReturn("No data found");
         when(webRequest.getDescription(false)).thenReturn("URI=/api/data");
-
         ResponseEntity<?> response = globalExceptionHandler.handleResourceNotFoundException(webRequest);
-
+        // Assert
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
         ErrorResponse errorResponse = (ErrorResponse) response.getBody();
         assertNotNull(errorResponse);
@@ -72,14 +70,28 @@ class GlobalExceptionHandlerTest {
         // Arrange
         when(apiConstants.getEXCEPTION_MSG_FORBIDDEN()).thenReturn("Action forbidden");
         when(webRequest.getDescription(false)).thenReturn("URI=/api/restricted");
-
         ResponseEntity<?> response = globalExceptionHandler.handleForbiddenException(webRequest);
-
+        // Assert
         assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
         ErrorResponse errorResponse = (ErrorResponse) response.getBody();
         assertNotNull(errorResponse);
         assertEquals(HttpStatus.FORBIDDEN.value(), errorResponse.getStatusCode());
         assertEquals("Action forbidden", errorResponse.getMessage());
+        assertEquals("URI=/api/restricted", errorResponse.getDetails());
+    }
+
+    @Test
+    void testHandleBadRequestException() {
+        // Arrange
+        when(apiConstants.getExceptionBadRequest()).thenReturn("Bad Request");
+        when(webRequest.getDescription(false)).thenReturn("URI=/api/restricted");
+        ResponseEntity<?> response = globalExceptionHandler.handleBadRequestException(webRequest);
+        // Assert
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        ErrorResponse errorResponse = (ErrorResponse) response.getBody();
+        assertNotNull(errorResponse);
+        assertEquals(HttpStatus.BAD_REQUEST.value(), errorResponse.getStatusCode());
+        assertEquals("Bad Request", errorResponse.getMessage());
         assertEquals("URI=/api/restricted", errorResponse.getDetails());
     }
 

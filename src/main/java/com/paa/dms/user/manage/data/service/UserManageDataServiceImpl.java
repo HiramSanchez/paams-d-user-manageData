@@ -1,5 +1,6 @@
 package com.paa.dms.user.manage.data.service;
 
+import com.paa.dms.user.manage.data.exception.custom.BadRequestException;
 import com.paa.dms.user.manage.data.exception.custom.ForbiddenException;
 import com.paa.dms.user.manage.data.exception.custom.NoDataFoundException;
 import com.paa.dms.user.manage.data.model.*;
@@ -14,6 +15,8 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import java.util.Optional;
+import java.util.stream.Stream;
+
 @Slf4j
 @Service
 public class UserManageDataServiceImpl implements UserManageDataService {
@@ -99,7 +102,7 @@ public class UserManageDataServiceImpl implements UserManageDataService {
     }
 
     /**
-     * Finds user name information by UID.
+     * Finds user's name information by UID.
      *
      * @param uid the unique identifier for the user
      * @return Optional containing the user's name entity
@@ -120,57 +123,84 @@ public class UserManageDataServiceImpl implements UserManageDataService {
         log.debug("REQUEST >>> " + userRequest.toString());
         String uid = httpHeaders.getFirst("uid").toString();
         //Checks which DB should be called according to request,then if needed updates data.
-        if (!userRequest.getEmail().isEmpty()
-                || !userRequest.getPhone().isEmpty()
-                || !userRequest.getAddress1().isEmpty()
-                || !userRequest.getAddress2().isEmpty()
-                || !userRequest.getCity().isEmpty()
-                || !userRequest.getState().isEmpty()
-                || !userRequest.getZipCode().isEmpty())
-            {
-                MongoUsersContactInfoEntity existingUserInfo = usersContactInfoRepository.findUserInfoByUid(uid).orElseThrow(() -> new NoDataFoundException());
-                MongoUsersContactInfoEntity foundUserInfo = existingUserInfo;
-                updateFieldIfNotEmpty(userRequest.getEmail(), foundUserInfo::setEmail, foundUserInfo::getEmail);
-                updateFieldIfNotEmpty(userRequest.getPhone(), foundUserInfo::setPhone, foundUserInfo::getPhone);
-                updateFieldIfNotEmpty(userRequest.getAddress1(), foundUserInfo::setAddress1, foundUserInfo::getAddress1);
-                updateFieldIfNotEmpty(userRequest.getAddress2(), foundUserInfo::setAddress2, foundUserInfo::getAddress2);
-                updateFieldIfNotEmpty(userRequest.getCity(), foundUserInfo::setCity, foundUserInfo::getCity);
-                updateFieldIfNotEmpty(userRequest.getState(), foundUserInfo::setState, foundUserInfo::getState);
-                updateFieldIfNotEmpty(userRequest.getZipCode(), foundUserInfo::setZipCode, foundUserInfo::getZipCode);
-                usersContactInfoRepository.save(foundUserInfo);
-            } else {
-                log.debug("No contact data updated");
-            }
-        // Checks if any name fields are provided for update
-        if (!userRequest.getName().isEmpty()
-                || !userRequest.getMiddleName().isEmpty()
-                || !userRequest.getLastName().isEmpty())
-            {   // Fetch existing user name info and update fields if necessary
-                MongoUsersNameEntity existingUserName = usersNameRepository.findUserNameByUid(uid).orElseThrow(() -> new NoDataFoundException());
-
-                    MongoUsersNameEntity foundUserName = existingUserName;
-                    updateFieldIfNotEmpty(userRequest.getName(), foundUserName::setFirstName, foundUserName::getFirstName);
-                    updateFieldIfNotEmpty(userRequest.getMiddleName(), foundUserName::setMiddleName, foundUserName::getMiddleName);
-                    updateFieldIfNotEmpty(userRequest.getLastName(), foundUserName::setLastName, foundUserName::getLastName);
-                    usersNameRepository.save(foundUserName);
-
-            } else {
-                log.debug("No name data updated");
-            }
-
-        ResponseEntity response = ResponseEntity.ok("User Updated");
+        boolean contactUpdated = tryUpdateContactInfo(userRequest, uid);
+        boolean nameUpdated = tryUpdateNameInfo(userRequest, uid);
+        if (!contactUpdated && !nameUpdated) {
+            throw new BadRequestException();
+        }
+        ResponseEntity<String> response = ResponseEntity.ok("User Updated");
         log.debug("RESPONSE >>> " + response);
         return response;
     }
 
     /**
-     * Updates a specific field of a user entity if the provided new value is not empty.
-     *
+     * Updates user contact Info when there is info to update
+     * @return true if something was updated, false if not.
+     */
+    public boolean tryUpdateContactInfo(RequestUpdateUserEntity userRequest, String uid) {
+        if (!hasContactInfoToUpdate(userRequest)) return false;
+
+        MongoUsersContactInfoEntity contactInfo = usersContactInfoRepository.findUserInfoByUid(uid)
+                .orElseThrow(NoDataFoundException::new);
+
+        updateIfPresent(userRequest.getEmail(), contactInfo::setEmail);
+        updateIfPresent(userRequest.getPhone(), contactInfo::setPhone);
+        updateIfPresent(userRequest.getAddress1(), contactInfo::setAddress1);
+        updateIfPresent(userRequest.getAddress2(), contactInfo::setAddress2);
+        updateIfPresent(userRequest.getCity(), contactInfo::setCity);
+        updateIfPresent(userRequest.getState(), contactInfo::setState);
+        updateIfPresent(userRequest.getZipCode(), contactInfo::setZipCode);
+
+        usersContactInfoRepository.save(contactInfo);
+        return true;
+    }
+
+    /**
+     * Updates user full name Info when there is info to update
+     * @return true if something was updated, false if not.
+     */
+    public boolean tryUpdateNameInfo(RequestUpdateUserEntity userRequest, String uid) {
+        if (!hasNameInfoToUpdate(userRequest)) return false;
+
+        MongoUsersNameEntity nameInfo = usersNameRepository.findUserNameByUid(uid)
+                .orElseThrow(NoDataFoundException::new);
+
+        updateIfPresent(userRequest.getName(), nameInfo::setFirstName);
+        updateIfPresent(userRequest.getMiddleName(), nameInfo::setMiddleName);
+        updateIfPresent(userRequest.getLastName(), nameInfo::setLastName);
+
+        usersNameRepository.save(nameInfo);
+        return true;
+    }
+
+    /**
+     * Verifies contact data on request.
+     */
+    public boolean hasContactInfoToUpdate(RequestUpdateUserEntity userRequest) {
+        return Stream.of(
+                userRequest.getEmail(), userRequest.getPhone(),
+                userRequest.getAddress1(), userRequest.getAddress2(),
+                userRequest.getCity(), userRequest.getState(),
+                userRequest.getZipCode()
+        ).anyMatch(value -> value != null && !value.isEmpty());
+    }
+
+    /**
+     * Verifies name data on request.
+     */
+    public boolean hasNameInfoToUpdate(RequestUpdateUserEntity userRequest) {
+        return Stream.of(
+                userRequest.getName(),
+                userRequest.getMiddleName(),
+                userRequest.getLastName()
+        ).anyMatch(value -> value != null && !value.isEmpty());
+    }
+    /**
+     * Updates a specific field of a user entity if the provided new value is not empty or null.
      * @param newValue the new value for the field
      * @param setter function to set the new value
-     * @param getter function to get the current value
      */
-    private void updateFieldIfNotEmpty(String newValue, Consumer<String> setter, Supplier<String> getter) {
+    public void updateIfPresent(String newValue, Consumer<String> setter) {
         if (newValue != null && !newValue.isEmpty()) {
             setter.accept(newValue);
         }

@@ -34,6 +34,8 @@ public class APIConstants {
     private String EXCEPTION_MSG_NO_DATA_FOUND;
     @Value("${constants.api.uri.errors.msg.forbidden}")
     private String EXCEPTION_MSG_FORBIDDEN;
+    @Value("${constants.api.uri.errors.msg.badRequest}")
+    private String exceptionBadRequest;
 
     //Swagger Constants
     @Value("${service.api.version}")
