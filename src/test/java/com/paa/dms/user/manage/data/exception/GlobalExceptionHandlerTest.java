@@ -83,7 +83,7 @@ class GlobalExceptionHandlerTest {
     @Test
     void testHandleBadRequestException() {
         // Arrange
-        when(apiConstants.getEXCEPTION_MSG_BAD_REQUEST()).thenReturn("Bad Request");
+        when(apiConstants.getExceptionBadRequest()).thenReturn("Bad Request");
         when(webRequest.getDescription(false)).thenReturn("URI=/api/restricted");
         ResponseEntity<?> response = globalExceptionHandler.handleBadRequestException(webRequest);
         // Assert

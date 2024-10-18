@@ -67,7 +67,7 @@ public class GlobalExceptionHandler {
      * @return ResponseEntity containing the error details and HTTP status 404 (Not Found)
      */
     @ExceptionHandler(NoDataFoundException.class)
-    public ResponseEntity<?> handleResourceNotFoundException(WebRequest request) {
+    public ResponseEntity<ErrorResponse> handleResourceNotFoundException(WebRequest request) {
         ErrorResponse errorDetails = new ErrorResponse(
                 HttpStatus.NOT_FOUND.value(),
                 apiConstants.getEXCEPTION_MSG_NO_DATA_FOUND(),
@@ -83,7 +83,7 @@ public class GlobalExceptionHandler {
      * @return ResponseEntity containing the error details and HTTP status 403 (Forbidden)
      */
     @ExceptionHandler(ForbiddenException.class)
-    public ResponseEntity<?> handleForbiddenException(WebRequest request) {
+    public ResponseEntity<ErrorResponse> handleForbiddenException(WebRequest request) {
         ErrorResponse errorDetails = new ErrorResponse(
                 HttpStatus.FORBIDDEN.value(),
                 apiConstants.getEXCEPTION_MSG_FORBIDDEN(),
@@ -99,10 +99,10 @@ public class GlobalExceptionHandler {
      * @return ResponseEntity containing the error details and HTTP status 400 (BadRequest)
      */
     @ExceptionHandler(BadRequestException.class)
-    public ResponseEntity<?> handleBadRequestException(WebRequest request) {
+    public ResponseEntity<ErrorResponse> handleBadRequestException(WebRequest request) {
         ErrorResponse errorDetails = new ErrorResponse(
                 HttpStatus.BAD_REQUEST.value(),
-                apiConstants.getEXCEPTION_MSG_BAD_REQUEST(),
+                apiConstants.getExceptionBadRequest(),
                 request.getDescription(false)
         );
         return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);

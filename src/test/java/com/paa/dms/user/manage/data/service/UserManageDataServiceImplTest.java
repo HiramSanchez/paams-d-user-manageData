@@ -1,5 +1,6 @@
 package com.paa.dms.user.manage.data.service;
 
+import com.paa.dms.user.manage.data.exception.custom.BadRequestException;
 import com.paa.dms.user.manage.data.exception.custom.ForbiddenException;
 import com.paa.dms.user.manage.data.exception.custom.NoDataFoundException;
 import com.paa.dms.user.manage.data.model.*;
@@ -17,15 +18,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.*;
 import static org.springframework.http.HttpStatus.OK;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.never;
 
 @ExtendWith(MockitoExtension.class)
 class UserManageDataServiceImplTest {
@@ -126,6 +124,112 @@ class UserManageDataServiceImplTest {
                 userManageDataService.findUserData(httpHeaders));
     }
 
+    @Test
+    void testUpdateUser_ShouldUpdateContactInfo_WhenContactInfoProvided() {
+        // Arrange
+        RequestUpdateUserEntity userRequest = new RequestUpdateUserEntity();
+        MongoUsersContactInfoEntity contactInfo = new MongoUsersContactInfoEntity();
+        userRequest.setEmail("test@example.com");
+        userRequest.setPhone("1234567890");
+        when(usersContactInfoRepository.findUserInfoByUid(anyString())).thenReturn(Optional.of(contactInfo));
+        // Act
+        ResponseEntity<String> response = userManageDataService.updateUser(userRequest, httpHeaders);
+        // Assert
+        assertEquals(ResponseEntity.ok("User Updated"), response);
+        assertEquals("test@example.com", contactInfo.getEmail());
+        assertEquals("1234567890", contactInfo.getPhone());
+        verify(usersContactInfoRepository).save(contactInfo);
+    }
+    @Test
+    void testUpdateUser_ShouldUpdateNameInfo_WhenNameInfoProvided() {
+        // Arrange
+        RequestUpdateUserEntity userRequest = new RequestUpdateUserEntity();
+        MongoUsersNameEntity nameInfo = new MongoUsersNameEntity();
+        userRequest.setName("John");
+        userRequest.setMiddleName("A.");
+        userRequest.setLastName("Doe");
+        when(usersNameRepository.findUserNameByUid(anyString())).thenReturn(Optional.of(nameInfo));
+        // Act
+        ResponseEntity<String> response = userManageDataService.updateUser(userRequest, httpHeaders);
+        // Assert
+        assertEquals(ResponseEntity.ok("User Updated"), response);
+        assertEquals("John", nameInfo.getFirstName());
+        assertEquals("A.", nameInfo.getMiddleName());
+        assertEquals("Doe", nameInfo.getLastName());
+        verify(usersNameRepository).save(nameInfo);
+    }
+    @Test
+    void testUpdateUser_ShouldThrowBadRequestException_WhenNoDataProvided() {
+        // Arrange
+        RequestUpdateUserEntity userRequest = new RequestUpdateUserEntity();
+        // Act & Assert
+        assertThrows(BadRequestException.class, () -> userManageDataService.updateUser(userRequest, httpHeaders));
+    }
+    @Test
+    void testTryUpdateContactInfo_ShouldReturnFalse_WhenNoContactInfo() {
+        // Arrange
+        RequestUpdateUserEntity userRequest = new RequestUpdateUserEntity();
+        MongoUsersContactInfoEntity contactInfo = new MongoUsersContactInfoEntity();
+        lenient().when(usersContactInfoRepository.findUserInfoByUid("199705039")).thenReturn(Optional.of(contactInfo));
+        // Act
+        boolean result = userManageDataService.tryUpdateContactInfo(userRequest, "199705039");
+        // Assert
+        assertFalse(result);
+        verify(usersContactInfoRepository, never()).save(any());
+    }
+
+    @Test
+    void testTryUpdateNameInfo_ShouldReturnFalse_WhenNoNameInfo() {
+        // Arrange
+        MongoUsersNameEntity nameInfo = new MongoUsersNameEntity();
+        RequestUpdateUserEntity userRequest = new RequestUpdateUserEntity();
+        lenient().when(usersNameRepository.findUserNameByUid("199705039")).thenReturn(Optional.of(nameInfo));
+        // Act
+        boolean result = userManageDataService.tryUpdateNameInfo(userRequest, "199705039");
+        // Assert
+        assertFalse(result);
+        verify(usersNameRepository, never()).save(any());
+    }
+    @Test
+    void testHasContactInfoToUpdate_ShouldReturnTrue_WhenAtLeastOneFieldIsNotEmpty() {
+        // Arrange
+        RequestUpdateUserEntity userRequest = new RequestUpdateUserEntity();
+        userRequest.setEmail("test@example.com");
+        // Act
+        boolean result = userManageDataService.hasContactInfoToUpdate(userRequest);
+        // Assert
+        assertTrue(result);
+    }
+    @Test
+    void testHasContactInfoToUpdate_ShouldReturnFalse_WhenAllFieldsAreEmpty() {
+        // Arrange
+        RequestUpdateUserEntity userRequest = new RequestUpdateUserEntity();
+        // Act
+        boolean result = userManageDataService.hasContactInfoToUpdate(userRequest);
+        // Assert
+        assertFalse(result);
+    }
+    @Test
+    void testUpdateIfPresent_ShouldCallSetter_WhenNewValueIsNotEmpty() {
+        // Arrange
+        Consumer<String> setter = mock(Consumer.class);
+        String newValue = "newValue";
+        // Act
+        userManageDataService.updateIfPresent(newValue, setter);
+        // Assert
+        verify(setter).accept(newValue);
+    }
+
+    @Test
+    void testUpdateIfPresent_ShouldNotCallSetter_WhenNewValueIsEmpty() {
+        // Arrange
+        Consumer<String> setter = mock(Consumer.class);
+        String newValue = "";
+        // Act
+        userManageDataService.updateIfPresent(newValue, setter);
+        // Assert
+        verify(setter, never()).accept(anyString());
+    }
 
 
     @Test

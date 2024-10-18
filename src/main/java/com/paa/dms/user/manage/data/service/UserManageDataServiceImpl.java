@@ -137,7 +137,7 @@ public class UserManageDataServiceImpl implements UserManageDataService {
      * Updates user contact Info when there is info to update
      * @return true if something was updated, false if not.
      */
-    private boolean tryUpdateContactInfo(RequestUpdateUserEntity userRequest, String uid) {
+    public boolean tryUpdateContactInfo(RequestUpdateUserEntity userRequest, String uid) {
         if (!hasContactInfoToUpdate(userRequest)) return false;
 
         MongoUsersContactInfoEntity contactInfo = usersContactInfoRepository.findUserInfoByUid(uid)
@@ -159,7 +159,7 @@ public class UserManageDataServiceImpl implements UserManageDataService {
      * Updates user full name Info when there is info to update
      * @return true if something was updated, false if not.
      */
-    private boolean tryUpdateNameInfo(RequestUpdateUserEntity userRequest, String uid) {
+    public boolean tryUpdateNameInfo(RequestUpdateUserEntity userRequest, String uid) {
         if (!hasNameInfoToUpdate(userRequest)) return false;
 
         MongoUsersNameEntity nameInfo = usersNameRepository.findUserNameByUid(uid)
@@ -176,7 +176,7 @@ public class UserManageDataServiceImpl implements UserManageDataService {
     /**
      * Verifies contact data on request.
      */
-    private boolean hasContactInfoToUpdate(RequestUpdateUserEntity userRequest) {
+    public boolean hasContactInfoToUpdate(RequestUpdateUserEntity userRequest) {
         return Stream.of(
                 userRequest.getEmail(), userRequest.getPhone(),
                 userRequest.getAddress1(), userRequest.getAddress2(),
@@ -188,7 +188,7 @@ public class UserManageDataServiceImpl implements UserManageDataService {
     /**
      * Verifies name data on request.
      */
-    private boolean hasNameInfoToUpdate(RequestUpdateUserEntity userRequest) {
+    public boolean hasNameInfoToUpdate(RequestUpdateUserEntity userRequest) {
         return Stream.of(
                 userRequest.getName(),
                 userRequest.getMiddleName(),
@@ -200,7 +200,7 @@ public class UserManageDataServiceImpl implements UserManageDataService {
      * @param newValue the new value for the field
      * @param setter function to set the new value
      */
-    private void updateIfPresent(String newValue, Consumer<String> setter) {
+    public void updateIfPresent(String newValue, Consumer<String> setter) {
         if (newValue != null && !newValue.isEmpty()) {
             setter.accept(newValue);
         }
