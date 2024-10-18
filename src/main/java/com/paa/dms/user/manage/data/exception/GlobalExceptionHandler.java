@@ -1,6 +1,7 @@
 package com.paa.dms.user.manage.data.exception;
 
 import com.paa.dms.user.manage.data.constants.APIConstants;
+import com.paa.dms.user.manage.data.exception.custom.BadRequestException;
 import com.paa.dms.user.manage.data.exception.custom.ForbiddenException;
 import com.paa.dms.user.manage.data.exception.custom.NoDataFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -89,5 +90,21 @@ public class GlobalExceptionHandler {
                 request.getDescription(false)
         );
         return new ResponseEntity<>(errorDetails, HttpStatus.FORBIDDEN);
+    }
+
+    /**
+     * Handles exceptions thrown when a bad request is attempted.
+     *
+     * @param request the current request context
+     * @return ResponseEntity containing the error details and HTTP status 400 (BadRequest)
+     */
+    @ExceptionHandler(BadRequestException.class)
+    public ResponseEntity<?> handleBadRequestException(WebRequest request) {
+        ErrorResponse errorDetails = new ErrorResponse(
+                HttpStatus.BAD_REQUEST.value(),
+                apiConstants.getEXCEPTION_MSG_BAD_REQUEST(),
+                request.getDescription(false)
+        );
+        return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
     }
 }

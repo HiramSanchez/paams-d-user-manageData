@@ -20,7 +20,7 @@ public class HeaderFilter implements Filter {
             httpResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             httpResponse.setContentType("application/json");
             String timestamp = new Date().toString();
-            String details = ((HttpServletRequest) request).getServletPath().toString();
+            String details = ((HttpServletRequest) request).getServletPath();
             httpResponse.getWriter().write("{\"timestamp\": \"" +timestamp+ "\"," +
                     "\"statusCode\":400," +
                     "\"message\":\"Missing uid header\"," +
