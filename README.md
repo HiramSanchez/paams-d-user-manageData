@@ -4,21 +4,19 @@
  &emsp;
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.2.3-lightgreen)](https://spring.io/projects/spring-boot)
  &emsp;
-[![Maven](https://img.shields.io/badge/Maven-3.9.9-gold)](https://maven.apache.org/)
+[![Maven](https://img.shields.io/badge/Maven-3.9.9-gold)](https://maven.apache.org/)  
+
+## **Description**
+The **paams-d-user-manageData** microservice is responsible for managing user registration data. It provides a RESTful API for creating, reading, updating, and deleting user records in the database. Designed for scalability and easy integration into a microservices architecture, this service manages multiple databases.
 
 ## Table of Contents  
-- [Description](#description)  
 - [Features](#features)  
 - [Endpoints](#api-endpoints)  
 - [Documentation](#api-documentation)
 - [Requirements](#requirements)
 - [Installation](#installation)
 - [Tests](#testing)
-- [Contact](#contact) 
-
-## **Description**
-The **paams-d-user-manageData** microservice is responsible for managing user registration data. It provides a RESTful API for creating, reading, updating, and deleting user records in the database. Designed for scalability and easy integration into a microservices architecture, this service manages multiple databases.
-
+- [Contact](#contact)  
 
 ## **Features**
 - **Create User Data**: Register new users and create records in the database.
