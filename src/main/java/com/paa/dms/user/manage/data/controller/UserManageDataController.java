@@ -128,4 +128,27 @@ public class UserManageDataController {
         return userManageDataServiceImpl.deleteUser(userRequest,httpHeaders);
     }
 
+    /**
+     * Endpoint for cheking user access.
+     *
+     * @param userRequest Request body containing access credentials
+     * @return ResponseEntity with status 200 OK and userId
+     */
+    @Operation( //swagger config
+            summary = "Log In Check",
+            description = "Checks validation for credentials submitted",
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "User credentials", required = true),
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "User verified successfully"),
+                    @ApiResponse(responseCode = "400", description = "{field} + {validation error details}"),
+                    @ApiResponse(responseCode = "404", description = "Resource not found in DB"),
+                    @ApiResponse(responseCode = "500", description = "An unexpected error occurred")
+            }
+    )
+    @GetMapping(path = APIConstants.CHECK_USER_ACCESS_ENDPOINT)
+    public ResponseEntity<ResponseUserAccess> findUserTokens(@Valid @RequestBody RequestLogInCheck userRequest) {
+        log.debug(apiConstants.getLOG_ACCESS_USER_ENDPOINT());
+        return userManageDataServiceImpl.findUserTokens(userRequest);
+    }
+
 }

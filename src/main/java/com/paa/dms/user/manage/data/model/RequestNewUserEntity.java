@@ -6,6 +6,12 @@ import lombok.Data;
 
 @Data
 public class RequestNewUserEntity {
+    /** The user's username */
+    @NotBlank(message = " is mandatory")
+    private String username;
+    /** The user's passcode */
+    @NotBlank(message = " is mandatory")
+    private String password;
     /** The user's first name */
     @NotBlank(message = " is mandatory")
     private String name;
