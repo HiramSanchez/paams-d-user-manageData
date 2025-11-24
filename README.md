@@ -16,6 +16,7 @@ The **paams-d-user-manageData** microservice is responsible for managing user re
 - **Update User Data**: Modify existing user registration data.
 - **Retrieve User Data**: Fetch user records from the database.
 - **Delete User Data**: Permanently delete user registration records. 
+- **User Log In**: Verifies credentials to log in.
 
 
 ## **API Endpoints**
@@ -31,6 +32,9 @@ The **paams-d-user-manageData** microservice is responsible for managing user re
   
 - **DELETE - /api/user/drop/data**  
   `user-drop-data`: Permanently deletes user records from the database.
+
+- **GET - /api/user/check/access**  
+  `log-in-verify`: Verifies credentials to log in and returns userId.
 
 ## **API Documentation**
 This project includes API documentation using swagger. Access the documentation by running it and navigating to:
