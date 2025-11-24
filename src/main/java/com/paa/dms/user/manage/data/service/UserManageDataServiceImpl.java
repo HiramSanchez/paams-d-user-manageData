@@ -4,6 +4,7 @@ import com.paa.dms.user.manage.data.exception.custom.BadRequestException;
 import com.paa.dms.user.manage.data.exception.custom.ForbiddenException;
 import com.paa.dms.user.manage.data.exception.custom.NoDataFoundException;
 import com.paa.dms.user.manage.data.model.*;
+import com.paa.dms.user.manage.data.repository.AccessRepository;
 import com.paa.dms.user.manage.data.repository.UsersContactInfoRepository;
 import com.paa.dms.user.manage.data.repository.UsersNameRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -12,7 +13,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -23,14 +23,16 @@ public class UserManageDataServiceImpl implements UserManageDataService {
 
     @Autowired
     private UsersContactInfoRepository usersContactInfoRepository;
-
     @Autowired
     private UsersNameRepository usersNameRepository;
+    @Autowired
+    private AccessRepository accessRepository;
 
     /**
      * Create User Service
-     *
+     * <p>
      * Saves a new user in the database using the provided user request data and HTTP headers.
+     *
      * @param userRequest the details of the new user
      * @param httpHeaders HTTP headers containing the user's unique identifier (UID)
      * @return ResponseEntity with a success message
@@ -54,9 +56,14 @@ public class UserManageDataServiceImpl implements UserManageDataService {
         userName.setFirstName(userRequest.getName());
         userName.setMiddleName(userRequest.getMiddleName());
         userName.setLastName(userRequest.getLastName());
+        MongoAccessEntity userAccess = new MongoAccessEntity();
+        userAccess.setUid(uid);
+        userAccess.setTokenN(userRequest.getUsername());
+        userAccess.setTokenP(userRequest.getPassword());
 
         usersContactInfoRepository.save(userInfo);
         usersNameRepository.save(userName);
+        accessRepository.save(userAccess);
         ResponseEntity response = ResponseEntity.ok("User Created");
         log.debug("RESPONSE >>> User Created");
         return response;
@@ -64,8 +71,9 @@ public class UserManageDataServiceImpl implements UserManageDataService {
 
     /**
      * Read Data Service
-     *
+     * <p>
      * Retrieves user data based on the provided UID from the HTTP headers.
+     *
      * @param httpHeaders HTTP headers containing the user's unique identifier (UID)
      * @return ResponseEntity containing the user's data
      */
@@ -76,19 +84,19 @@ public class UserManageDataServiceImpl implements UserManageDataService {
         var userInfo = findUsersInfoByUid(uid).orElseThrow(() -> new NoDataFoundException());
         var userName = findUserNameByUid(uid).orElseThrow(() -> new NoDataFoundException());
 
-            ResponseUserDataEntity response = new ResponseUserDataEntity();
-            response.setEmail(userInfo.getEmail());
-            response.setPhone(userInfo.getPhone());
-            response.setAddress1(userInfo.getAddress1());
-            response.setAddress2(userInfo.getAddress2());
-            response.setCity(userInfo.getCity());
-            response.setState(userInfo.getState());
-            response.setZipCode(userInfo.getZipCode());
-            response.setName(userName.getFirstName());
-            response.setMiddleName(userName.getMiddleName());
-            response.setLastName(userName.getLastName());
-            log.debug("RESPONSE >>> " + response);
-            return ResponseEntity.ok(response);
+        ResponseUserDataEntity response = new ResponseUserDataEntity();
+        response.setEmail(userInfo.getEmail());
+        response.setPhone(userInfo.getPhone());
+        response.setAddress1(userInfo.getAddress1());
+        response.setAddress2(userInfo.getAddress2());
+        response.setCity(userInfo.getCity());
+        response.setState(userInfo.getState());
+        response.setZipCode(userInfo.getZipCode());
+        response.setName(userName.getFirstName());
+        response.setMiddleName(userName.getMiddleName());
+        response.setLastName(userName.getLastName());
+        log.debug("RESPONSE >>> " + response);
+        return ResponseEntity.ok(response);
     }
 
     /**
@@ -113,13 +121,14 @@ public class UserManageDataServiceImpl implements UserManageDataService {
 
     /**
      * Update Data Service
-     *
+     * <p>
      * Updates existing user data with the provided new user request data.
+     *
      * @param userRequest the new user data for the update
      * @param httpHeaders HTTP headers containing the user's unique identifier (UID)
      * @return ResponseEntity with a success message
      */
-    public ResponseEntity<String> updateUser(RequestUpdateUserEntity userRequest,HttpHeaders httpHeaders) {
+    public ResponseEntity<String> updateUser(RequestUpdateUserEntity userRequest, HttpHeaders httpHeaders) {
         log.debug("REQUEST >>> " + userRequest.toString());
         String uid = httpHeaders.getFirst("uid").toString();
         //Checks which DB should be called according to request,then if needed updates data.
@@ -135,6 +144,7 @@ public class UserManageDataServiceImpl implements UserManageDataService {
 
     /**
      * Updates user contact Info when there is info to update
+     *
      * @return true if something was updated, false if not.
      */
     public boolean tryUpdateContactInfo(RequestUpdateUserEntity userRequest, String uid) {
@@ -157,6 +167,7 @@ public class UserManageDataServiceImpl implements UserManageDataService {
 
     /**
      * Updates user full name Info when there is info to update
+     *
      * @return true if something was updated, false if not.
      */
     public boolean tryUpdateNameInfo(RequestUpdateUserEntity userRequest, String uid) {
@@ -195,10 +206,12 @@ public class UserManageDataServiceImpl implements UserManageDataService {
                 userRequest.getLastName()
         ).anyMatch(value -> value != null && !value.isEmpty());
     }
+
     /**
      * Updates a specific field of a user entity if the provided new value is not empty or null.
+     *
      * @param newValue the new value for the field
-     * @param setter function to set the new value
+     * @param setter   function to set the new value
      */
     public void updateIfPresent(String newValue, Consumer<String> setter) {
         if (newValue != null && !newValue.isEmpty()) {
@@ -208,8 +221,9 @@ public class UserManageDataServiceImpl implements UserManageDataService {
 
     /**
      * Delete User Service
-     *
+     * <p>
      * Deletes a user from the database based on the provided request and HTTP headers.
+     *
      * @param userRequest contains the email of the user to be deleted
      * @param httpHeaders HTTP headers containing the user's unique identifier (UID)
      * @return ResponseEntity with a success message
@@ -223,13 +237,37 @@ public class UserManageDataServiceImpl implements UserManageDataService {
         MongoUsersNameEntity storedUserName = findUserNameByUid(uid).orElseThrow(() -> new NoDataFoundException());
         // Validate email before deleting the user
         if (userRequest.getEmail().equals(storedUserData.getEmail())) {
-                usersContactInfoRepository.deleteById(storedUserData.get_id().toString());
-                usersNameRepository.deleteById(storedUserName.get_id().toString());
-                ResponseEntity response = ResponseEntity.ok("User deleted successfully");
-                log.debug("RESPONSE >>> " + response);
-                return response;
-            }else{
-                throw new ForbiddenException();
-            }
+            usersContactInfoRepository.deleteById(storedUserData.get_id().toString());
+            usersNameRepository.deleteById(storedUserName.get_id().toString());
+            ResponseEntity response = ResponseEntity.ok("User deleted successfully");
+            log.debug("RESPONSE >>> " + response);
+            return response;
+        } else {
+            throw new ForbiddenException();
+        }
+    }
+
+
+    /**
+     * Check Access Service
+     * <p>
+     * Retrieves user data based on the provided UID from the HTTP headers.
+     *
+     * @param userRequest contains the access data to log in.
+     * @return ResponseEntity containing the user's ID.
+     */
+    public ResponseEntity<ResponseUserAccess> findUserTokens(RequestLogInCheck userRequest) {
+        log.debug("REQUEST >>> Log In Check requested for: " + userRequest.getTokenN());
+        var userData = findUserByTokens(userRequest.getTokenN(), userRequest.getTokenP())
+                .orElseThrow(() -> new NoDataFoundException());
+
+        ResponseUserAccess response = new ResponseUserAccess();
+        response.setUid(userData.getUid());
+        log.debug("RESPONSE >>> " + response);
+        return ResponseEntity.ok(response);
+    }
+
+    public Optional<MongoAccessEntity> findUserByTokens(String tokenN, String tokenP) {
+        return accessRepository.findUserByTokens(tokenN, tokenP);
     }
 }

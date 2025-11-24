@@ -14,6 +14,7 @@ public class APIConstants {
     public static final String READ_USER_DATA_ENDPOINT = "${constants.api.uri.userDataRead.path}";
     public static final String UPDATE_USER_DATA_ENDPOINT = "${constants.api.uri.userDataUpdate.path}";
     public static final String DELETE_USER_DATA_ENDPOINT = "${constants.api.uri.userDropData.path}";
+    public static final String CHECK_USER_ACCESS_ENDPOINT = "${constants.api.uri.userCheckAccess.path}";
 
     //Service call log messages
     @Value("${service.api.name}")
@@ -26,6 +27,8 @@ public class APIConstants {
     private String LOG_UPDATE_USER_ENDPOINT;
     @Value("${constants.api.uri.userDropData.call}")
     private String LOG_DELETE_USER_ENDPOINT;
+    @Value("${constants.api.uri.userCheckAccess.call}")
+    private String LOG_ACCESS_USER_ENDPOINT;
 
     //Error resolver log messages
     @Value("${constants.api.uri.errors.msg.unexpected}")

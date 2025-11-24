@@ -4,6 +4,7 @@ import com.paa.dms.user.manage.data.exception.custom.BadRequestException;
 import com.paa.dms.user.manage.data.exception.custom.ForbiddenException;
 import com.paa.dms.user.manage.data.exception.custom.NoDataFoundException;
 import com.paa.dms.user.manage.data.model.*;
+import com.paa.dms.user.manage.data.repository.AccessRepository;
 import com.paa.dms.user.manage.data.repository.UsersContactInfoRepository;
 import com.paa.dms.user.manage.data.repository.UsersNameRepository;
 import org.bson.types.ObjectId;
@@ -34,6 +35,8 @@ class UserManageDataServiceImplTest {
     private UsersContactInfoRepository usersContactInfoRepository;
     @Mock
     private UsersNameRepository usersNameRepository;
+    @Mock
+    private AccessRepository accessRepository;
 
     private HttpHeaders httpHeaders;
 
@@ -59,11 +62,14 @@ class UserManageDataServiceImplTest {
         userRequest.setName("John");
         userRequest.setMiddleName("M.");
         userRequest.setLastName("Doe");
+        userRequest.setUsername("Doe");
+        userRequest.setPassword("Doe");
         // Act
         ResponseEntity<String> response = userManageDataService.saveUser(userRequest, httpHeaders);
         // Assert
         verify(usersContactInfoRepository, times(1)).save(any(MongoUsersContactInfoEntity.class));
         verify(usersNameRepository, times(1)).save(any(MongoUsersNameEntity.class));
+        verify(accessRepository, times(1)).save(any(MongoAccessEntity.class));
         assertEquals(OK, response.getStatusCode());
         assertEquals("User Created", response.getBody());
     }

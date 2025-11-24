@@ -1,9 +1,6 @@
 package com.paa.dms.user.manage.data.controller;
 import com.paa.dms.user.manage.data.constants.APIConstants;
-import com.paa.dms.user.manage.data.model.RequestDeleteUserEntity;
-import com.paa.dms.user.manage.data.model.RequestNewUserEntity;
-import com.paa.dms.user.manage.data.model.RequestUpdateUserEntity;
-import com.paa.dms.user.manage.data.model.ResponseUserDataEntity;
+import com.paa.dms.user.manage.data.model.*;
 import com.paa.dms.user.manage.data.service.UserManageDataService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -85,6 +82,21 @@ class UserManageDataControllerTest {
         Mockito.verify(userManageDataServiceImpl, Mockito.times(1)).deleteUser(userRequest, httpHeaders);
         Assertions.assertEquals(200, response.getStatusCode().value());
         Assertions.assertEquals("User Deleted", response.getBody());
+    }
+
+    @Test
+    void testCheckTokens() {
+        // Arrange
+        RequestLogInCheck requestLogInCheck = new RequestLogInCheck();
+        ResponseUserAccess responseUserAccess = new ResponseUserAccess();
+        responseUserAccess.setUid("123");
+        Mockito.when(userManageDataServiceImpl.findUserTokens(requestLogInCheck)).thenReturn(new ResponseEntity<>(responseUserAccess,HttpStatus.OK));
+        ResponseEntity<ResponseUserAccess> response = userManageDataController.findUserTokens(requestLogInCheck);
+
+        // Assert
+        Mockito.verify(userManageDataServiceImpl, Mockito.times(1)).findUserTokens(requestLogInCheck);
+        Assertions.assertEquals(200, response.getStatusCode().value());
+        Assertions.assertEquals("123", response.getBody().getUid());
     }
 
 }
